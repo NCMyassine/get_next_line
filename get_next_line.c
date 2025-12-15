@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: yabouzel <yabouzel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/23 21:11:34 by yabouzel          #+#    #+#             */
-/*   Updated: 2025/11/29 18:10:45 by yabouzel         ###   ########.fr       */
+/*   Created: 2025/12/11 00:36:18 by yabouzel          #+#    #+#             */
+/*   Updated: 2025/12/14 18:29:32 by yabouzel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,46 +19,125 @@ int check_nl(char *str)
 {
     int j;
 
+    j = 0;
     while(str[j])
     {
-        if(str[j] == "\n")
+        if(str[j] == '\n')
             return(j);
         j++;
     }
-    return(0);
+    return(-1);
 }
+
+char	*str_join(char *result, char *buff, int indxnl)
+{
+	int		i;
+	char	*ns;
+	
+	i = 0;
+	if (result == NULL || buff == NULL)
+		return (NULL);
+	if (indxnl != -1)
+		ns = malloc (ft_strlen(result) + indxnl + 2);	
+	else if (indxnl == -1)
+		ns = malloc (ft_strlen(result) + ft_strlen(buff) + 1);
+	if (!ns)
+		return (NULL);
+    while (result[i] != '\0')
+    {
+		ns[i] = result[i];
+        i++;
+    }
+    while (*buff != '\0' && *buff != '\n')
+	{
+		ns[i++] = *buff;
+		buff++;
+	}
+	ns[i] = '\0';
+	return (ns);
+}
+
+char *result_combiner(char *result, char *buff, int indxnl, int signal)
+{   
+    if (signal == 0)
+    {
+        result = str_join(result, buff, indxnl);
+        if (!result)
+            return (NULL);
+        if (indxnl != -1)
+            ft_strcpy(buff, buff + indxnl + 1);
+        return (result);
+    }
+    if (signal == 1)
+    {
+        if(indxnl != -1)
+        {
+            result = str_join(result, buff, indxnl);
+            if(!result)
+                return(NULL);
+            ft_strcpy(buff, buff + indxnl + 1);
+            return(result);
+        }
+        if(ft_strlen(result) == 0)
+            return(free(result), NULL);
+    }
+    return(result);
+}
+
+char *readncheck(char *buff, int fd, char *result)
+{
+    int indxnl;
+    int readed;
+    
+    if(ft_strlen(buff) > 0)
+    {
+        indxnl = check_nl(buff);
+        result = result_combiner(result, buff, indxnl, 0);
+        if(indxnl != -1)
+            return(result);
+    }
+    readed = read(fd, buff, BUFFER_SIZE);
+    buff[readed] = '\0';
+    indxnl = check_nl(buff);
+    while (indxnl == -1 && readed > 0)
+    {
+        result = str_join(result, buff, indxnl);
+        if(!result)
+            return(NULL);
+        readed = read(fd, buff, BUFFER_SIZE);
+        buff[readed] = '\0';
+        indxnl = check_nl(buff);
+    }
+    result = result_combiner(result, buff, indxnl, 1);
+    if(!result)
+        return(NULL);
+    return(result);
+}
+
 char *get_next_line(int fd)
 {
     static char *buff;
     char *result;
-    int i;
-    int indxnl;
     int readed;
-
-    if(fd < 0 || BUFFER_SIZE <= 0)
-        return(NULL);
+    int indxnl;
+    
+    if (fd < 0 || BUFFER_SIZE <= 0)   
+        return (NULL);
     result = ft_strdup("");
+    if (!result)
+        return (NULL);
+    if (buff != NULL)
+    {
+        result = readncheck(buff, fd, result);
+        if(!result)
+            return(free(result), free(buff), NULL);
+        return(result);
+    }
+    buff = malloc(BUFFER_SIZE + 1);
     if (!buff)
-    {
-        buff = malloc(BUFFER_SIZE + 1);
-        if(!buff)
-            return(free(result),free(buff),NULL);
-        readed = read(fd, buff, BUFFER_SIZE);
-    }
-    while(0 == (indxnl = check_nl(buff)))
-    {
-        if(readed < BUFFER_SIZE)
-            return(NULL);
-        result = ft_strjoin(result, buff);
-        readed = read(fd, buff, BUFFER_SIZE);
-    }
+        return (free(result),NULL);
+    result = readncheck(buff, fd, result);
+    if(!result)
+        return(free(result), free(buff), NULL);
     return(result);
-}
-int main()
-{
-    int fd = open("yas.txt", O_RDONLY);
-    char *str = get_next_line(fd);
-    printf("%s\n", str);
-    printf("%d", fd);
-    close(fd);
 }
