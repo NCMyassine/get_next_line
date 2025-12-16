@@ -1,19 +1,7 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: yabouzel <yabouzel@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/11 00:36:18 by yabouzel          #+#    #+#             */
-/*   Updated: 2025/12/14 18:29:32 by yabouzel         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 int check_nl(char *str)
 {
