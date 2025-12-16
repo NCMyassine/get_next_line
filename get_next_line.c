@@ -117,8 +117,6 @@ char *get_next_line(int fd)
 {
     static char *buff;
     char *result;
-    int readed;
-    int indxnl;
     
     if (fd < 0 || BUFFER_SIZE <= 0 || fd > 1024)   
         return (NULL);
