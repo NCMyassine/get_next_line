@@ -6,7 +6,7 @@
 /*   By: yabouzel <yabouzel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/24 18:55:49 by yabouzel          #+#    #+#             */
-/*   Updated: 2025/12/14 12:04:12 by yabouzel         ###   ########.fr       */
+/*   Updated: 2025/12/17 19:05:24 by yabouzel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,5 +25,5 @@ char	*ft_strdup(const char *s);
 size_t	ft_strlen(const char *str);
 char	*ft_strcpy(char *dest, char *src);
 char    *get_next_line(int fd);
-
+void clean_ptr(char **str);
 #endif

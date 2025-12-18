@@ -4,7 +4,6 @@
 #include <stdio.h>
 int main()
 {
-    int i = 0;
     int fd = open("txt.txt", O_RDONLY);
     char *str = get_next_line(fd);
     while (str != NULL)
