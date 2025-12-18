@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yabouzel <yabouzel@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/18 11:50:39 by yabouzel          #+#    #+#             */
+/*   Updated: 2025/12/18 11:51:17 by yabouzel         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -24,13 +36,13 @@ char	*str_join(char *result, char *buff, int indxnl)
 	
 	i = 0;
 	if (result == NULL || buff == NULL)
-		return (NULL);
+		return (free(result), free(buff), NULL);
 	if (indxnl != -1)
-		ns = malloc (ft_strlen(result) + indxnl + 2);	
-	else if (indxnl == -1)
+		ns = malloc (ft_strlen(result) + indxnl + 2);
+	else
 		ns = malloc (ft_strlen(result) + ft_strlen(buff) + 1);
 	if (!ns)
-		return (NULL);
+		return (free(buff), free(result), NULL);
     while (result[i] != '\0')
     {
 		ns[i] = result[i];
@@ -105,14 +117,12 @@ char *get_next_line(int fd)
 {
     static char *buff;
     char *result;
-    int readed;
-    int indxnl;
-    
+
     if (fd < 0 || BUFFER_SIZE <= 0 || fd > 1024)   
-        return (NULL);
+        return (free(buff),NULL);
     result = ft_strdup("");
     if (!result)
-        return (NULL);
+        return (free(buff), NULL);
     if (buff != NULL)
     {
         result = readncheck(buff, fd, result);
