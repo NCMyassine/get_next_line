@@ -6,7 +6,7 @@
 /*   By: yabouzel <yabouzel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/25 10:57:49 by yabouzel          #+#    #+#             */
-/*   Updated: 2025/12/17 19:04:21 by yabouzel         ###   ########.fr       */
+/*   Updated: 2025/12/20 16:49:50 by yabouzel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 size_t	ft_strlen(const char *str)
 {
 	size_t	i;
-
+	
 	i = 0;
 	while (str[i] != '\0')
 		i++;
@@ -53,14 +53,4 @@ char	*ft_strcpy(char *dest, char *src)
 	}
 	dest[i] = '\0'; 
 	return (dest);
-}
-
-
-void clean_ptr(char **str)
-{
-	if (*str)
-	{
-		free(str);
-		*str = NULL;
-	}
 }

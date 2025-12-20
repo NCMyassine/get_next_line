@@ -6,7 +6,7 @@
 /*   By: yabouzel <yabouzel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/11 00:36:18 by yabouzel          #+#    #+#             */
-/*   Updated: 2025/12/18 11:45:42 by yabouzel         ###   ########.fr       */
+/*   Updated: 2025/12/20 16:46:24 by yabouzel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,13 +36,13 @@ char	*str_join(char *result, char *buff, int indxnl)
 	
 	i = 0;
 	if (result == NULL || buff == NULL)
-		return (free(result), free(buff), NULL);
+		return (NULL);
 	if (indxnl != -1)
-		ns = malloc (ft_strlen(result) + indxnl + 2);
-	else
+		ns = malloc (ft_strlen(result) + indxnl + 2);	
+	else if (indxnl == -1)
 		ns = malloc (ft_strlen(result) + ft_strlen(buff) + 1);
 	if (!ns)
-		return (free(buff), free(result), NULL);
+		return (NULL);
     while (result[i] != '\0')
     {
 		ns[i] = result[i];
@@ -50,10 +50,10 @@ char	*str_join(char *result, char *buff, int indxnl)
     }
     while (*buff != '\0')
 	{
-		ns[i++] = *buff;
+        ns[i++] = *buff;
         if (*(buff++) == '\n')
-            break ;
-	}
+            break;
+    }
 	ns[i] = '\0';
 	return (free(result), ns);
 }
@@ -85,17 +85,17 @@ char *result_combiner(char *result, char *buff, int indxnl, int signal)
     return(result);
 }
 
-char *readncheck(char *buff, int fd, char *result)
+char *readncheck(char *buff, int fd, char *result, int check)
 {
     int indxnl;
     int readed;
     
-    if(ft_strlen(buff) > 0)
+    if(check == 1)
     {
         indxnl = check_nl(buff);
         result = result_combiner(result, buff, indxnl, 0);
-        if(indxnl != -1)
-            return(result);
+        if (indxnl != -1)
+            return (result);
     }
     readed = read(fd, buff, BUFFER_SIZE);
     buff[readed] = '\0';
@@ -117,23 +117,23 @@ char *get_next_line(int fd)
 {
     static char *buff;
     char *result;
-
+    
     if (fd < 0 || BUFFER_SIZE <= 0 || fd > 1024)   
         return (free(buff),NULL);
     result = ft_strdup("");
     if (!result)
-        return (free(buff), NULL);
+        return (free(buff),NULL);
     if (buff != NULL)
     {
-        result = readncheck(buff, fd, result);
+        result = readncheck(buff, fd, result, 1);
         if(!result)
             return(free(result), free(buff), NULL);
         return(result);
     }
-    buff = malloc(BUFFER_SIZE + 1);
+    buff = malloc((size_t)BUFFER_SIZE + 1);
     if (!buff)
         return (free(result),NULL);
-    result = readncheck(buff, fd, result);
+    result = readncheck(buff, fd, result, 0);
     if(!result)
         return(free(result), free(buff), NULL);
     return(result);
