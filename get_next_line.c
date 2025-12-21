@@ -6,7 +6,7 @@
 /*   By: yabouzel <yabouzel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/11 00:36:18 by yabouzel          #+#    #+#             */
-/*   Updated: 2025/12/20 16:46:24 by yabouzel         ###   ########.fr       */
+/*   Updated: 2025/12/21 22:51:39 by yabouzel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,18 @@ int check_nl(char *str)
         j++;
     }
     return(-1);
+}
+
+char *readnset(int fd)
+{
+    int readed;
+    char *buff;
+    
+    readed = read(fd, buff, BUFFER_SIZE);
+    if(readed == -1)
+        return(NULL); 
+    buff[readed] = '\0';
+    return(buff);
 }
 
 char	*str_join(char *result, char *buff, int indxnl)
@@ -97,16 +109,14 @@ char *readncheck(char *buff, int fd, char *result, int check)
         if (indxnl != -1)
             return (result);
     }
-    readed = read(fd, buff, BUFFER_SIZE);
-    buff[readed] = '\0';
+    buff = readnset(fd);
     indxnl = check_nl(buff);
     while (indxnl == -1 && readed > 0)
     {
         result = str_join(result, buff, indxnl);
         if(!result)
             return(NULL);
-        readed = read(fd, buff, BUFFER_SIZE);
-        buff[readed] = '\0';
+        buff = readnset(fd);
         indxnl = check_nl(buff);
     }
     result = result_combiner(result, buff, indxnl, 1);
