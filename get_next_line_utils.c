@@ -6,7 +6,7 @@
 /*   By: yabouzel <yabouzel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/25 10:57:49 by yabouzel          #+#    #+#             */
-/*   Updated: 2025/12/20 16:49:50 by yabouzel         ###   ########.fr       */
+/*   Updated: 2025/12/23 05:05:38 by yabouzel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,4 +53,22 @@ char	*ft_strcpy(char *dest, char *src)
 	}
 	dest[i] = '\0'; 
 	return (dest);
+}
+int check_nl(char *str)
+{
+    int j;
+
+    j = 0;
+    while(str[j])
+    {
+        if(str[j] == '\n')
+            return(j);
+        j++;
+    }
+    return(-1);
+}
+void free_helper(char *str)
+{
+	free(str);
+	str = NULL;
 }

@@ -6,7 +6,7 @@
 /*   By: yabouzel <yabouzel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/11 00:36:18 by yabouzel          #+#    #+#             */
-/*   Updated: 2025/12/21 22:51:39 by yabouzel         ###   ########.fr       */
+/*   Updated: 2025/12/23 05:16:38 by yabouzel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,32 +14,6 @@
 #include <unistd.h>
 #include <stdio.h>
 #include "get_next_line.h"
-
-int check_nl(char *str)
-{
-    int j;
-
-    j = 0;
-    while(str[j])
-    {
-        if(str[j] == '\n')
-            return(j);
-        j++;
-    }
-    return(-1);
-}
-
-char *readnset(int fd)
-{
-    int readed;
-    char *buff;
-    
-    readed = read(fd, buff, BUFFER_SIZE);
-    if(readed == -1)
-        return(NULL); 
-    buff[readed] = '\0';
-    return(buff);
-}
 
 char	*str_join(char *result, char *buff, int indxnl)
 {
@@ -51,10 +25,10 @@ char	*str_join(char *result, char *buff, int indxnl)
 		return (NULL);
 	if (indxnl != -1)
 		ns = malloc (ft_strlen(result) + indxnl + 2);	
-	else if (indxnl == -1)
+	else
 		ns = malloc (ft_strlen(result) + ft_strlen(buff) + 1);
 	if (!ns)
-		return (NULL);
+		return (free(result),NULL);
     while (result[i] != '\0')
     {
 		ns[i] = result[i];
@@ -69,57 +43,55 @@ char	*str_join(char *result, char *buff, int indxnl)
 	ns[i] = '\0';
 	return (free(result), ns);
 }
-
-char *result_combiner(char *result, char *buff, int indxnl, int signal)
-{   
-    if (signal == 0)
+char *readncheck(char *buff, int fd, char *result)
+{
+    int readed;
+    int indxnl;
+    
+    readed = 1;
+    indxnl = -1;
+    while (indxnl == -1 && readed > 0)
     {
+        readed = read(fd, buff, BUFFER_SIZE);
+        if(readed < 0)
+            return(NULL);
+        buff[readed] = '\0';
+        indxnl = check_nl(buff);
         result = str_join(result, buff, indxnl);
-        if (!result)
-            return (NULL);
-        if (indxnl != -1)
-            ft_strcpy(buff, buff + indxnl + 1);
-        return (result);
+        if(!result)
+            return(NULL);
     }
-    if (signal == 1)
+    if(indxnl != -1)
+        ft_strcpy(buff, buff + indxnl + 1);
+    else if(readed == 0)
     {
-        if(indxnl != -1)
-        {
-            result = str_join(result, buff, indxnl);
-            if(!result)
-                return(NULL);
-            ft_strcpy(buff, buff + indxnl + 1);
-            return(result);
-        }
         if(ft_strlen(result) == 0)
-            return(free(result), NULL);
+            return(free(result),NULL);
     }
     return(result);
 }
 
-char *readncheck(char *buff, int fd, char *result, int check)
-{
+char *result_combiner(char *result, char *buff, int fd)
+{   
     int indxnl;
-    int readed;
-    
-    if(check == 1)
-    {
-        indxnl = check_nl(buff);
-        result = result_combiner(result, buff, indxnl, 0);
-        if (indxnl != -1)
-            return (result);
-    }
-    buff = readnset(fd);
+
     indxnl = check_nl(buff);
-    while (indxnl == -1 && readed > 0)
+    if(indxnl == -1)
     {
         result = str_join(result, buff, indxnl);
         if(!result)
             return(NULL);
-        buff = readnset(fd);
-        indxnl = check_nl(buff);
+        result = readncheck(buff, fd, result);
+        if(!result)
+            return(NULL);
     }
-    result = result_combiner(result, buff, indxnl, 1);
+    else
+    {
+        result = str_join(result, buff, indxnl);
+        if(!result)
+            return(NULL);
+        ft_strcpy(buff, buff + indxnl + 1);
+    }
     return(result);
 }
 
@@ -129,22 +101,22 @@ char *get_next_line(int fd)
     char *result;
     
     if (fd < 0 || BUFFER_SIZE <= 0 || fd > 1024)   
-        return (free(buff),NULL);
+        return (free_helper(buff),NULL);
     result = ft_strdup("");
     if (!result)
-        return (free(buff),NULL);
-    if (buff != NULL)
+        return (free_helper(buff),NULL);
+    if (buff == NULL)
     {
-        result = readncheck(buff, fd, result, 1);
+        buff = malloc((size_t)BUFFER_SIZE + 1);
+        if (!buff)
+            return (free(result),NULL);
+        result = readncheck(buff, fd, result);
         if(!result)
-            return(free(result), free(buff), NULL);
+            return(free_helper(buff), NULL);
         return(result);
     }
-    buff = malloc((size_t)BUFFER_SIZE + 1);
-    if (!buff)
-        return (free(result),NULL);
-    result = readncheck(buff, fd, result, 0);
+    result = result_combiner(result, buff, fd);
     if(!result)
-        return(free(result), free(buff), NULL);
+        return(free_helper(buff), NULL);
     return(result);
 }

@@ -6,7 +6,7 @@
 /*   By: yabouzel <yabouzel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/18 11:50:39 by yabouzel          #+#    #+#             */
-/*   Updated: 2025/12/19 16:42:03 by yabouzel         ###   ########.fr       */
+/*   Updated: 2025/12/23 05:28:27 by yabouzel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,20 +15,6 @@
 #include <stdio.h>
 #include "get_next_line_bonus.h"
 
-int check_nl(char *str)
-{
-    int j;
-
-    j = 0;
-    while(str[j])
-    {
-        if(str[j] == '\n')
-            return(j);
-        j++;
-    }
-    return(-1);
-}
-
 char	*str_join(char *result, char *buff, int indxnl)
 {
 	int		i;
@@ -36,13 +22,13 @@ char	*str_join(char *result, char *buff, int indxnl)
 	
 	i = 0;
 	if (result == NULL || buff == NULL)
-		return (free(result), free(buff), NULL);
+		return (NULL);
 	if (indxnl != -1)
-		ns = malloc (ft_strlen(result) + indxnl + 2);
+		ns = malloc (ft_strlen(result) + indxnl + 2);	
 	else
 		ns = malloc (ft_strlen(result) + ft_strlen(buff) + 1);
 	if (!ns)
-		return (free(buff), free(result), NULL);
+		return (free(result),NULL);
     while (result[i] != '\0')
     {
 		ns[i] = result[i];
@@ -50,66 +36,62 @@ char	*str_join(char *result, char *buff, int indxnl)
     }
     while (*buff != '\0')
 	{
-		ns[i++] = *buff;
+        ns[i++] = *buff;
         if (*(buff++) == '\n')
-            break ;
-	}
+            break;
+    }
 	ns[i] = '\0';
 	return (free(result), ns);
 }
-
-char *result_combiner(char *result, char *buff, int indxnl, int signal)
-{   
-    if (signal == 0)
+char *readncheck(char *buff, int fd, char *result)
+{
+    int readed;
+    int indxnl;
+    
+    readed = 1;
+    indxnl = -1;
+    while (indxnl == -1 && readed > 0)
     {
+        readed = read(fd, buff, BUFFER_SIZE);
+        if(readed < 0)
+            return(NULL);
+        buff[readed] = '\0';
+        indxnl = check_nl(buff);
         result = str_join(result, buff, indxnl);
-        if (!result)
-            return (NULL);
-        if (indxnl != -1)
-            ft_strcpy(buff, buff + indxnl + 1);
-        return (result);
+        if(!result)
+            return(NULL);
     }
-    if (signal == 1)
+    if(indxnl != -1)
+        ft_strcpy(buff, buff + indxnl + 1);
+    else if(readed == 0)
     {
-        if(indxnl != -1)
-        {
-            result = str_join(result, buff, indxnl);
-            if(!result)
-                return(NULL);
-            ft_strcpy(buff, buff + indxnl + 1);
-            return(result);
-        }
         if(ft_strlen(result) == 0)
-            return(free(result), NULL);
+            return(free(result),NULL);
     }
     return(result);
 }
 
-char *readncheck(char *buff, int fd, char *result)
-{
+char *result_combiner(char *result, char *buff, int fd)
+{   
     int indxnl;
-    int readed;
-    
-    if(ft_strlen(buff) > 0)
-    {
-        indxnl = check_nl(buff);
-        result = result_combiner(result, buff, indxnl, 0);
-        if(indxnl != -1)
-            return(result);
-    }
-    readed = read(fd, buff, BUFFER_SIZE);
-    buff[readed] = '\0';
+
     indxnl = check_nl(buff);
-    while (indxnl == -1 && readed > 0)
+    if(indxnl == -1)
     {
         result = str_join(result, buff, indxnl);
         if(!result)
             return(NULL);
-        readed = read(fd, buff, BUFFER_SIZE);
-        buff[readed] = '\0';
-        indxnl = check_nl(buff);
+        result = readncheck(buff, fd, result);
+        if(!result)
+            return(NULL);
     }
-    result = result_combiner(result, buff, indxnl, 1);
+    else
+    {
+        result = str_join(result, buff, indxnl);
+        if(!result)
+            return(NULL);
+        ft_strcpy(buff, buff + indxnl + 1);
+    }
     return(result);
 }
 
@@ -117,24 +99,24 @@ char *get_next_line(int fd)
 {
     static char *buff;
     char *result;
-
+    
     if (fd < 0 || BUFFER_SIZE <= 0 || fd > 1024)   
-        return (free(buff),NULL);
+        return (free_helper(buff),NULL);
     result = ft_strdup("");
     if (!result)
-        return (free(buff), NULL);
-    if (buff != NULL)
+        return (free_helper(buff),NULL);
+    if (buff == NULL)
     {
+        buff = malloc((size_t)BUFFER_SIZE + 1);
+        if (!buff)
+            return (free(result),NULL);
         result = readncheck(buff, fd, result);
         if(!result)
-            return(free(result), free(buff), NULL);
+            return(free_helper(buff), NULL);
         return(result);
     }
-    buff = malloc(BUFFER_SIZE + 1);
-    if (!buff)
-        return (free(result),NULL);
-    result = readncheck(buff, fd, result);
+    result = result_combiner(result, buff, fd);
     if(!result)
-        return(free(result), free(buff), NULL);
+        return(free_helper(buff), NULL);
     return(result);
 }
