@@ -6,7 +6,7 @@
 /*   By: yabouzel <yabouzel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/11 00:36:18 by yabouzel          #+#    #+#             */
-/*   Updated: 2025/12/23 05:16:38 by yabouzel         ###   ########.fr       */
+/*   Updated: 2025/12/23 05:58:08 by yabouzel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ char	*str_join(char *result, char *buff, int indxnl)
 	ns[i] = '\0';
 	return (free(result), ns);
 }
-char *readncheck(char *buff, int fd, char *result)
+char    *readncheck(char *buff, int fd, char *result)
 {
     int readed;
     int indxnl;
@@ -53,53 +53,53 @@ char *readncheck(char *buff, int fd, char *result)
     while (indxnl == -1 && readed > 0)
     {
         readed = read(fd, buff, BUFFER_SIZE);
-        if(readed < 0)
-            return(NULL);
+        if (readed < 0)
+            return (NULL);
         buff[readed] = '\0';
         indxnl = check_nl(buff);
         result = str_join(result, buff, indxnl);
-        if(!result)
-            return(NULL);
+        if (!result)
+            return (NULL);
     }
-    if(indxnl != -1)
+    if (indxnl != -1)
         ft_strcpy(buff, buff + indxnl + 1);
-    else if(readed == 0)
+    else if (readed == 0)
     {
-        if(ft_strlen(result) == 0)
-            return(free(result),NULL);
+        if (ft_strlen(result) == 0)
+            return (free(result),NULL);
     }
-    return(result);
+    return (result);
 }
 
-char *result_combiner(char *result, char *buff, int fd)
+char    *result_combiner(char *result, char *buff, int fd)
 {   
     int indxnl;
 
     indxnl = check_nl(buff);
-    if(indxnl == -1)
+    if (indxnl == -1)
     {
         result = str_join(result, buff, indxnl);
-        if(!result)
-            return(NULL);
+        if (!result)
+            return (NULL);
         result = readncheck(buff, fd, result);
-        if(!result)
-            return(NULL);
+        if (!result)
+            return (NULL);
     }
     else
     {
         result = str_join(result, buff, indxnl);
-        if(!result)
-            return(NULL);
+        if (!result)
+            return (NULL);
         ft_strcpy(buff, buff + indxnl + 1);
     }
-    return(result);
+    return (result);
 }
 
-char *get_next_line(int fd)
+char    *get_next_line(int fd)
 {
     static char *buff;
     char *result;
-    
+
     if (fd < 0 || BUFFER_SIZE <= 0 || fd > 1024)   
         return (free_helper(buff),NULL);
     result = ft_strdup("");
@@ -111,12 +111,12 @@ char *get_next_line(int fd)
         if (!buff)
             return (free(result),NULL);
         result = readncheck(buff, fd, result);
-        if(!result)
-            return(free_helper(buff), NULL);
-        return(result);
+        if (!result)
+            return (free_helper(buff), NULL);
+        return (result);
     }
     result = result_combiner(result, buff, fd);
-    if(!result)
-        return(free_helper(buff), NULL);
-    return(result);
+    if (!result)
+        return (free_helper(buff), NULL);
+    return (result);
 }

@@ -6,7 +6,7 @@
 /*   By: yabouzel <yabouzel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/18 11:50:39 by yabouzel          #+#    #+#             */
-/*   Updated: 2025/12/23 05:28:27 by yabouzel         ###   ########.fr       */
+/*   Updated: 2025/12/23 06:02:27 by yabouzel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,11 +43,11 @@ char	*str_join(char *result, char *buff, int indxnl)
 	ns[i] = '\0';
 	return (free(result), ns);
 }
-char *readncheck(char *buff, int fd, char *result)
+char    *readncheck(char *buff, int fd, char *result)
 {
     int readed;
     int indxnl;
-    
+
     readed = 1;
     indxnl = -1;
     while (indxnl == -1 && readed > 0)
@@ -97,26 +97,26 @@ char *result_combiner(char *result, char *buff, int fd)
 
 char *get_next_line(int fd)
 {
-    static char *buff;
+    static char *buff[1024];
     char *result;
     
     if (fd < 0 || BUFFER_SIZE <= 0 || fd > 1024)   
-        return (free_helper(buff),NULL);
+        return (free_helper(buff[fd]),NULL);
     result = ft_strdup("");
     if (!result)
-        return (free_helper(buff),NULL);
-    if (buff == NULL)
+        return (free_helper(buff[fd]),NULL);
+    if (buff[fd] == NULL)
     {
-        buff = malloc((size_t)BUFFER_SIZE + 1);
-        if (!buff)
+        buff[fd] = malloc((size_t)BUFFER_SIZE + 1);
+        if (!buff[fd])
             return (free(result),NULL);
-        result = readncheck(buff, fd, result);
+        result = readncheck(buff[fd], fd, result);
         if(!result)
-            return(free_helper(buff), NULL);
+            return(free_helper(buff[fd]), NULL);
         return(result);
     }
-    result = result_combiner(result, buff, fd);
+    result = result_combiner(result, buff[fd], fd);
     if(!result)
-        return(free_helper(buff), NULL);
+        return(free_helper(buff[fd]), NULL);
     return(result);
 }
