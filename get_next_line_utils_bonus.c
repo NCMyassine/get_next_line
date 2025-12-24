@@ -67,8 +67,8 @@ int	check_nl(char *str)
 }
 return (-1);
 }
-void	free_helper(char *str)
+void	free_helper(char **str)
 {
-	free(str);
-	str = NULL;
+	free(*str);
+	*str = NULL;
 }

@@ -101,10 +101,10 @@ char *get_next_line(int fd)
     char *result;
     
     if (fd < 0 || BUFFER_SIZE <= 0 || fd > 1024)   
-        return (free_helper(buff[fd]),NULL);
+        return (free_helper(&buff[fd]),NULL);
     result = ft_strdup("");
     if (!result)
-        return (free_helper(buff[fd]),NULL);
+        return (free_helper(&buff[fd]),NULL);
     if (buff[fd] == NULL)
     {
         buff[fd] = malloc((size_t)BUFFER_SIZE + 1);
@@ -112,11 +112,11 @@ char *get_next_line(int fd)
             return (free(result),NULL);
         result = readncheck(buff[fd], fd, result);
         if(!result)
-            return(free_helper(buff[fd]), NULL);
+            return(free_helper(&buff[fd]), NULL);
         return(result);
     }
     result = result_combiner(result, buff[fd], fd);
     if(!result)
-        return(free_helper(buff[fd]), NULL);
+        return(free_helper(&buff[fd]), NULL);
     return(result);
 }
