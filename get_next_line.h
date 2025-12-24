@@ -24,7 +24,7 @@
 char    *ft_strdup(const char *s);
 size_t  ft_strlen(const char *str);
 char    *ft_strcpy(char *dest, char *src);
-void    free_helper(char *str);
+void    free_helper(char **str);
 int check_nl(char *str);
 char    *get_next_line(int fd);
 
