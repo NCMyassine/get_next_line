@@ -6,7 +6,7 @@
 /*   By: yabouzel <yabouzel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/25 10:57:49 by yabouzel          #+#    #+#             */
-/*   Updated: 2025/12/23 05:58:45 by yabouzel         ###   ########.fr       */
+/*   Updated: 2025/12/24 19:21:48 by yabouzel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,13 @@
 size_t	ft_strlen(const char *str)
 {
 	size_t	i;
-	
+
 	i = 0;
 	while (str[i] != '\0')
 		i++;
 	return (i);
 }
+
 char	*ft_strdup(const char *s)
 {
 	int		size;
@@ -51,22 +52,24 @@ char	*ft_strcpy(char *dest, char *src)
 		dest[i] = src[i];
 		i++;
 	}
-	dest[i] = '\0'; 
+	dest[i] = '\0';
 	return (dest);
 }
+
 int	check_nl(char *str)
 {
-    int	j;
+	int	j;
 
-    j = 0;
-    while (str[j])
-    {
-        if (str[j] == '\n')
-            return (j);
-        j++;
-    }
-    return (-1);
+	j = 0;
+	while (str[j])
+	{
+		if (str[j] == '\n')
+			return (j);
+		j++;
+	}
+	return (-1);
 }
+
 void	free_helper(char **str)
 {
 	free(*str);
