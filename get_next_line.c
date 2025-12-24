@@ -6,7 +6,7 @@
 /*   By: yabouzel <yabouzel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/11 00:36:18 by yabouzel          #+#    #+#             */
-/*   Updated: 2025/12/23 05:58:08 by yabouzel         ###   ########.fr       */
+/*   Updated: 2025/12/24 18:04:14 by yabouzel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ char    *readncheck(char *buff, int fd, char *result)
     {
         if (ft_strlen(result) == 0)
             return (free(result),NULL);
+        return(free_helper(&buff), result);
     }
     return (result);
 }
@@ -109,7 +110,7 @@ char    *get_next_line(int fd)
     {
         buff = malloc((size_t)BUFFER_SIZE + 1);
         if (!buff)
-            return (free(result),NULL);
+            return (free(result), NULL);
         result = readncheck(buff, fd, result);
         if (!result)
             return (free_helper(&buff), NULL);

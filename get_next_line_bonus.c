@@ -6,7 +6,7 @@
 /*   By: yabouzel <yabouzel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/18 11:50:39 by yabouzel          #+#    #+#             */
-/*   Updated: 2025/12/23 06:02:27 by yabouzel         ###   ########.fr       */
+/*   Updated: 2025/12/24 18:18:34 by yabouzel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ char    *readncheck(char *buff, int fd, char *result)
     {
         if(ft_strlen(result) == 0)
             return(free(result),NULL);
+        return(free_helper(&buff), result);
     }
     return(result);
 }
